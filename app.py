@@ -1,4 +1,3 @@
-
 import streamlit as st
 from triz_solver import analyze_task
 
@@ -16,7 +15,7 @@ st.subheader(
 
 st.write(
     "Опишите свою задачу. Приложение поможет структурировать "
-    "проблему и подготовить её к анализу с помощью ТРИЗ."
+    "проблему и провести анализ с помощью методов ТРИЗ."
 )
 
 st.markdown("---")
@@ -31,7 +30,7 @@ problem = st.text_area(
 
 object_name = st.text_input(
     "Объект",
-    placeholder="Например: металлическая конструкция"
+    placeholder="Например: школьный рюкзак"
 )
 
 useful_action = st.text_input(
@@ -77,39 +76,25 @@ if st.button("Проанализировать задачу"):
         st.warning("Заполните описание проблемы и укажите объект.")
 
     else:
-        result = analyze_task(
-            problem,
-            object_name,
-            useful_action,
-            undesired_effect,
-            goal,
-            constraints,
-            resources
-        )
+        with st.spinner("ИИ анализирует задачу. Подождите..."):
+            try:
+                result = analyze_task(
+                    problem,
+                    object_name,
+                    useful_action,
+                    undesired_effect,
+                    goal,
+                    constraints,
+                    resources
+                )
 
-        st.success("Анализ задачи выполнен!")
+                st.success("Анализ задачи выполнен!")
+                st.subheader("Результаты анализа")
+                st.markdown(result["problem_analysis"])
 
-        st.subheader("Результаты анализа")
-
-        st.markdown("### 1. Исходная проблема")
-        st.write(result["problem_analysis"])
-
-        st.markdown("### 2. Техническое противоречие")
-        st.write(result["contradiction"])
-
-        st.markdown("### 3. Идеальный конечный результат (ИКР)")
-        st.write(result["ideal_result"])
-
-        st.markdown("### 4. Доступные ресурсы")
-        st.write(result["resources"])
-
-        st.markdown("### 5. Ограничения")
-        st.write(result["constraints"])
-
-        st.info(
-            "Это предварительный анализ. В дальнейшем мы подключим "
-            "искусственный интеллект и инструменты ТРИЗ."
-        )
+            except Exception as error:
+                st.error("Не удалось выполнить анализ.")
+                st.write(str(error))
 
 st.markdown("---")
 
